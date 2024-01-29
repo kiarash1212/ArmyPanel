@@ -266,6 +266,8 @@ def update_tickets(request):
     today = timezone.today() - timedelta(hours=24)
     Ticket.objects.filter(status__exact="answered", update__lte=today).update(status="closed")
 
+    return HttpResponse("OK")
+
 @require_http_methods(["GET"])
 def account_view(request):
     orders = Order.objects.filter(enable=True)
