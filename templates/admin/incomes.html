@@ -1,0 +1,30 @@
+{% extends 'admin/index.html' %}
+
+{% block content %}
+
+    <h2>Income Chart</h2>
+    <canvas id="incomeChart"></canvas>
+    {{ block.super }}
+    <script>
+        fetch('/chart/income/')
+            .then(response => response.json())
+            .then(data => {
+                const ctx = document.getElementById('incomeChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: data.labels,
+                        datasets: [{
+                            label: 'Income',
+                            data: data.income_data,
+                            borderColor: 'blue',
+                            fill: false,
+                        }]
+                    },
+                    options: {
+                        // Customize chart options if needed
+                    }
+                });
+            });
+    </script>
+{% endblock %}

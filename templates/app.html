@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+{% load static humanize %}
+{% block style %}
+    <link rel="stylesheet" href="{% static 'bootstrap/css/jalalidatepicker.min.css' %}">
+{% endblock %}
+{% block main %}
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h2">گزارش گیری</h1>
+        <div class="d-flex justify-content-between flex-wrap">
+            <div class="btn-toolbar mb-md-0 mx-3">
+                <a  href="{% url 'exel_report' %}?start_date={{ request.GET.start_date|default:"" }}&end_date={{ request.GET.end_date|default:"" }}&period=daily" class="btn btn-sm btn-outline-secondary">
+                    دریافت خروجی روزانه
+                </a>
+
+            </div>
+            <div class="btn-toolbar mb-md-0">
+                <a  href="{% url 'exel_report' %}?start_date={{ request.GET.start_date|default:"" }}&end_date={{ request.GET.end_date|default:"" }}&period=monthly" class="btn btn-sm btn-outline-secondary">
+                    دریافت خروجی ماهانه
+                </a>
+
+            </div>
+        </div>
+    </div>
+
+    <form class="row g-3">
+        <div class="col-auto">
+            <input class="form-control" id="start_date" type="text" name="start_date" data-jdp required
+                   value="{{ request.GET.start_date|default:"" }}"
+                   placeholder="لطفا یک تاریخ شروع را وارد نمایید"/>
+        </div>
+        <div class="col-auto">
+            <input class="form-control" id="end_date" type="text" name="end_date" data-jdp required
+                   value="{{ request.GET.end_date|default:"" }}"
+                   placeholder="لطفا یک تاریخ پایان را وارد نمایید"/>
+        </div>
+        <div class="col-auto">
+            <button type="submit" class="btn btn-primary mb-3">دریافت گزارش</button>
+        </div>
+    </form>
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+            <tr>
+                <th scope="col">درآمد امروز</th>
+                <th scope="col">درآمد هفته</th>
+                <th scope="col">درآمد ماه</th>
+                <th scope="col">کل درآمد در بازده زمانی شما</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>{{ general_income.daily.total|default:"0"|intcomma }} تومان</td>
+                <td>{{ general_income.weekly.total|default:"0"|intcomma }} تومان</td>
+                <td>{{ general_income.monthly.total|default:"0"|intcomma }} تومان</td>
+                <td>{{ general_income.total.total|default:"0"|intcomma }} تومان</td>
+            </tr>
+
+            </tbody>
+        </table>
+        <table class="table">
+            <thead>
+            <tr>
+                <th scope="col">هزینه امروز</th>
+                <th scope="col">هزینه هفته</th>
+                <th scope="col">هزینه ماه</th>
+                <th scope="col">کل هزینه در بازده زمانی شما</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>{{ general_income.daily.cost|default:"0"|intcomma }} تومان</td>
+                <td>{{ general_income.weekly.cost|default:"0"|intcomma }} تومان</td>
+                <td>{{ general_income.monthly.cost|default:"0"|intcomma }} تومان</td>
+                <td>{{ general_income.total.cost|default:"0"|intcomma }} تومان</td>
+            </tr>
+
+            </tbody>
+        </table>
+
+        <table class="table">
+            <thead>
+            <tr>
+                <th scope="col">سود امروز</th>
+                <th scope="col">سود هفته</th>
+                <th scope="col">سود ماه</th>
+                <th scope="col">کل سود در بازده زمانی شما</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>{{ general_income.daily.profit|default:"0"|intcomma }} تومان</td>
+                <td>{{ general_income.weekly.profit|default:"0"|intcomma }} تومان</td>
+                <td>{{ general_income.monthly.profit|default:"0"|intcomma }} تومان</td>
+                <td>{{ general_income.total.profit|intcomma|default:"0" }} تومان</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script type="text/javascript" src="{% static 'bootstrap/js/jalalidatepicker.min.js' %}"></script>
+{% endblock %}

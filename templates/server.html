@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+
+{% block main %}
+    <div class="container">
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>آدرس سرور</th>
+                    <th>حجم کل نود‌ها</th>
+                    <th>مجموع حجم فروخته‌شده</th>
+                    <th>مجموع حجم مصرفی</th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+                <script>
+                    var dataByCountry = {{ server_data|safe }}
+                    var serverData = [];
+
+                    for (key in dataByCountry){serverData = serverData.concat(dataByCountry[key])}
+
+                    var serverMap = {}; // نگهداری داده‌ها بر اساس آدرس سرور
+
+                    serverData.forEach(function (item) {
+                        if (!serverMap[item.server__address]) {
+                            serverMap[item.server__address] = [];
+                        }
+                        serverMap[item.server__address].push(item);
+                    });
+
+                    var reportTable = document.querySelector('tbody');
+
+                    // تابع برای ایجاد ردیف گزارش برای هر سرور
+                    function generateReportForServer(serverAddress, nodes) {
+                        var serverTotalVolume = 0;
+                        var serverTotalSoldVolume = 0;
+                        var serverTotalConsumption = 0;
+
+                        nodes.forEach(function (node) {
+                            serverTotalVolume += parseFloat(node.total_server_volume);
+                            serverTotalSoldVolume += parseFloat(node.total_sold_volume);
+                            serverTotalConsumption += parseFloat(node.total_consumption);
+                        });
+
+                        var row = document.createElement('tr');
+                        row.innerHTML = `
+                    <td>${serverAddress}</td>
+                    <td>${serverTotalVolume.toFixed(2)} گیگابایت</td>
+                    <td>${serverTotalSoldVolume.toFixed(2)} گیگابایت</td>
+                    <td>${serverTotalConsumption.toFixed(2)} گیگابایت</td>
+                `;
+
+                        reportTable.appendChild(row);
+                    }
+
+                    // ایجاد ردیف گزارش برای هر سرور
+                    for (var serverAddress in serverMap) {
+                        if (serverMap.hasOwnProperty(serverAddress)) {
+                            var nodes = serverMap[serverAddress];
+                            generateReportForServer(serverAddress, nodes);
+                        }
+                    }
+                </script>
+            </table>
+        </div>
+
+    {% for country, rows in server_data.items %}
+        <h4>{{ country }}</h4>
+        <div style="border-bottom: orange solid  1px;width: 40%;margin-top: 10px"></div>
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>آدرس سرور</th>
+                    <th>حجم سرور</th>
+                    <th>حجم فروش رفته</th>
+                    <th>حجم مصرف شده</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for server in rows %}
+                    <tr>
+                        <td>{{ server.name__address }} | {{ server.server__address }}</td>
+                        <td>{{ server.total_server_volume|floatformat:2 }} گیگابایت</td>
+                        <td>{{ server.total_sold_volume|floatformat:2 }} گیگابایت</td>
+                        <td>{{ server.total_consumption|floatformat:2 }} گیگابایت</td>
+                    </tr>
+                {% endfor %}
+
+                </tbody>
+            </table>
+
+        </div>
+    {% endfor %}
+    </div>
+{% endblock %}

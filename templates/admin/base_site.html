@@ -1,0 +1,15 @@
+{% extends 'admin/base_site.html' %}
+
+{% load static %}
+
+
+{% block title %}{% if subtitle %}{{ subtitle }} | {% endif %}{{ title }} | مدیریت ربات{% endblock %}
+
+
+{% block extrastyle %}{{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{% static 'admin/override.css' %}"/>{% endblock %}
+
+{% block branding %}
+    <h3 style="padding-right: 5px;"><a href="{% url 'app' %}">گزارشات</a></h3>
+    <h1 id="site-name" style="border-left: wheat solid 1px;padding: 2px"><a href="{% url 'admin:index' %}">مدیریت ربات کانفیگ</a></h1>
+{% endblock %}

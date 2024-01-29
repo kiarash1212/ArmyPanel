@@ -1,0 +1,205 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block style %}
+
+    <style>
+    </style>
+
+{% endblock %}
+{% block main %}
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <h2>نمودار درصد فروش سرویس‌ها</h2>
+                <canvas id="serviceSalesChart"></canvas>
+            </div>
+            <div class="col">
+                <h2>نمودار درصد فروش کشورها</h2>
+                <canvas id="countrySalesChart"></canvas>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col mw-100" >
+                <h2>نمودار میزان درآمد و هزینه ها</h2>
+                <canvas id="salesChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+
+{% endblock %}
+
+{% block script %}
+
+    <script src="{% static 'bootstrap/js/chart.js' %}"></script>
+    <script src="{% static 'bootstrap/js/chartjs-adapter-date-fns.js' %}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+    <script>
+        var serviceSalesData = {{ service_sales_data|safe }};
+        var countrySalesData = {{ country_sales_data|safe }};
+
+        Chart.defaults.font.size = 14;
+
+        var ctx = document.getElementById('serviceSalesChart').getContext('2d');
+        var chart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: serviceSalesData.map(item => item.service),
+                datasets: [{
+                    data: serviceSalesData.map(item => item.total_sales),
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.7)',
+                        'rgba(54, 162, 235, 0.7)',
+                        'rgba(255, 206, 86, 0.7)',
+                        'rgba(75, 192, 192, 0.7)',
+                        'rgba(153, 102, 255, 0.7)',
+                        'rgba(255, 129, 61, 0.7)'
+                    ],
+                }],
+            },
+            options: {
+                responsive: true,
+                layout: {
+                    padding: 40,
+                },
+            plugins: {
+                tooltip: {
+                  callbacks: {
+                    label: function(context){
+                      var data = context.dataset.data,
+                          label = context.label,
+                          currentValue = context.raw,
+                          total = 0;
+
+                      for( var i = 0; i < data.length; i++ ){
+                        total += data[i];
+                      }
+                      var percentage = parseFloat((currentValue/total*100).toFixed(1));
+
+                      return currentValue + ' (' + percentage + '%)';
+                    }
+                  }
+                }
+              }
+            },
+            font: {
+                family: 'Vazir',
+                size: 25,
+                weight: 'normal',
+            }
+        });
+
+
+        var country_ctx = document.getElementById('countrySalesChart').getContext('2d');
+        var country_chart = new Chart(country_ctx, {
+            type: 'doughnut',
+            data: {
+                labels: countrySalesData.map(item => item.country),
+                datasets: [{
+                    data: countrySalesData.map(item => item.total_sales),
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.7)',
+                        'rgba(54, 162, 235, 0.7)',
+                        'rgba(255, 206, 86, 0.7)',
+                        'rgba(75, 192, 192, 0.7)',
+                        'rgba(153, 102, 255, 0.7)',
+                        'rgba(215, 119, 24, 0.7)'
+                    ],
+                }],
+            },
+            options: {
+                responsive: true,
+                layout: {
+                    padding: 40,
+                },
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function (context) {
+                                var data = context.dataset.data,
+                                    label = context.label,
+                                    currentValue = context.raw,
+                                    total = 0;
+
+                                for (var i = 0; i < data.length; i++) {
+                                    total += data[i];
+                                }
+                                var percentage = parseFloat((currentValue / total * 100).toFixed(1));
+
+                                return currentValue + ' (' + percentage + '%)';
+                            }
+                        }
+                    }
+                },
+            },
+            font: {
+                family: 'Vazir',
+                size: 18,
+                weight: 'normal',
+            }
+        });
+
+    </script>
+    <script>
+        var salesData = {{ sales_data|safe }};
+
+        var ctx = document.getElementById('salesChart').getContext('2d');
+        var chart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: salesData.map(item => item.date),
+                datasets: [
+                    {
+                        label: 'فروش',
+                        data: salesData.map(item => item.total_price),
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        borderWidth: 1,
+                        fill: false
+                    },
+                    {
+                        label: 'هزینه',
+                        data: salesData.map(item => item.total_cost),
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1,
+                        fill: false
+                    },
+                    {
+                        label: 'سود',
+                        data: salesData.map(item => item.total_profit),
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1,
+                        fill: false
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                legend: {
+                    position: 'top',
+                },
+                layout: {
+                    padding : 40
+                }
+            },
+            plugins: {
+
+                // دکمه‌های تغییر بازه‌های زمانی
+                time: {
+                    displayFormats: {
+                        day: 'MMM D',
+                        week: 'MMM D',
+                        month: 'MMM YYYY',
+                    }
+                }
+            },
+            // تنظیمات فونت
+            font: {
+                family: 'Vazir',
+                size: 14,
+                weight: 'normal',
+            }
+
+        });
+    </script>
+{% endblock %}
