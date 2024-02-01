@@ -13,7 +13,7 @@ def get_transaction_report(data):
 
     today = datetime.now()
     start_of_month = today.replace(day=1)
-    end_of_month = today.replace(day=30)
+    end_of_month = today.replace(day=29)
 
     start_of_week = today - timedelta(days=today.weekday())
     end_of_week = start_of_week + timedelta(days=6)
